@@ -1,0 +1,72 @@
+version: 2
+
+project_name: aspm
+
+builds:
+  - id: build-linux
+    main: ./cmd/trivy/
+    binary: aspm
+
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+
+    env:
+      - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
+
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+  - id: build-macos
+    main: ./cmd/trivy/
+    binary: aspm
+
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+
+    env:
+      - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
+
+    goos:
+      - darwin
+    goarch:
+      - amd64
+
+  - id: build-windows
+    main: ./cmd/trivy/
+    binary: aspm
+
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+
+    env:
+      - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
+
+    goos:
+      - windows
+    goarch:
+      - amd64
+
+archives:
+  - id: archive
+    formats:
+      - zip
+
+    name_template: >-
+      aspm_{{ .Version }}_
+      {{- if eq .Os "darwin" }}mac
+      {{- else }}{{ .Os }}
+      {{- end }}
+
+checksum:
+  name_template: checksums.txt
