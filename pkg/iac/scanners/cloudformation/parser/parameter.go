@@ -54,8 +54,7 @@ func unmarshalIntFirst(dec *jsontext.Decoder, v *any) error {
 		}
 		return nil
 	}
-	// Fall back to the default decoding.
-	return errors.ErrUnsupported
+	return json.SkipFunc
 }
 
 func (p *Parameter) Type() cftypes.CfType {

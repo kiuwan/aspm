@@ -158,7 +158,8 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	log.DebugContext(ctx, "Scanning files for misconfigurations...", log.String("scanner", s.scanner.Name()))
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
-		if _, ok := errors.AsType[*cfparser.InvalidContentError](err); ok {
+		var invalidContentError *cfparser.InvalidContentError
+		if errors.As(err, &invalidContentError) {
 			log.ErrorContext(ctx, "scan was broken with InvalidContentError", s.scanner.Name(), log.Err(err))
 			return nil, nil
 		}

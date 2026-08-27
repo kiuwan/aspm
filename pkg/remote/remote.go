@@ -89,8 +89,9 @@ func tryWithMirrors[T any](ref name.Reference, option types.RegistryOptions, fn 
 	for _, r := range append(mirrors, ref) {
 		result, err := fn(r)
 		if err != nil {
+			var multiErr *multierror.Error
 			// All auth options failed, try the next mirror/host
-			if multiErr, ok := errors.AsType[*multierror.Error](err); ok {
+			if errors.As(err, &multiErr) {
 				errs = multierror.Append(errs, multiErr.Errors...)
 				continue
 			}

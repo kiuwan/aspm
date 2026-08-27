@@ -18,7 +18,7 @@ mage test:k8s          # Kubernetes integration tests
 
 ### Run specific test
 ```bash
-go test -tags=integration -run TestRepository ./integration -v
+GOEXPERIMENT=jsonv2 go test -tags=integration -run TestRepository ./integration -v
 ```
 
 ## Golden Files
@@ -40,7 +40,7 @@ mage test:updateModuleGolden
 mage test:updateVMGolden
 
 # Update specific golden files manually
-go test -tags=integration -run TestRepository ./integration -v -update
+GOEXPERIMENT=jsonv2 go test -tags=integration -run TestRepository ./integration -v -update
 ```
 
 **Important**:

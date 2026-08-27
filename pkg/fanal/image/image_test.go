@@ -51,11 +51,6 @@ func TestNewDockerImage(t *testing.T) {
 	}()
 	serverAddr := tr.Listener.Addr().String()
 
-	// The registry computes the manifest digest by compressing the layers of the tarball,
-	// so the value depends on the compressor of the toolchain the tests are built with.
-	imgDigest, err := localImage(t).Digest()
-	require.NoError(t, err)
-
 	type args struct {
 		imageName string
 		option    types.ImageOptions
@@ -159,7 +154,7 @@ func TestNewDockerImage(t *testing.T) {
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
-				serverAddr + "/library/alpine@" + imgDigest.String(),
+				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
 			},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
@@ -218,7 +213,7 @@ func TestNewDockerImage(t *testing.T) {
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
-				serverAddr + "/library/alpine@" + imgDigest.String(),
+				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
 			},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",

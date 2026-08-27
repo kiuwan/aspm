@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-	"cmp"
 	"context"
 	"errors"
 	"io/fs"
@@ -187,7 +186,6 @@ type AnalysisResult struct {
 	Misconfigurations    []ftypes.Misconfiguration
 	Secrets              []ftypes.Secret
 	Licenses             []ftypes.LicenseFile
-	CryptoAssets         []ftypes.CryptoAsset
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Digests contains SHA-256 digests of unpackaged files
@@ -209,7 +207,7 @@ func NewAnalysisResult() *AnalysisResult {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CryptoAssets) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
@@ -272,20 +270,6 @@ func (r *AnalysisResult) Sort() {
 
 		return r.Licenses[i].Type < r.Licenses[j].Type
 	})
-
-	// Cryptographic assets
-	// Preserve the input order of assets with the same identity and file path.
-	sort.SliceStable(r.CryptoAssets, func(i, j int) bool {
-		left, right := &r.CryptoAssets[i], &r.CryptoAssets[j]
-		return cmp.Or(
-			cmp.Compare(left.Kind, right.Kind),
-			cmp.Compare(left.KeyType, right.KeyType),
-			cmp.Compare(left.Identity.Method, right.Identity.Method),
-			cmp.Compare(left.Identity.Value, right.Identity.Value),
-			cmp.Compare(left.Identity.Parameters, right.Identity.Parameters),
-			cmp.Compare(left.FilePath, right.FilePath),
-		) < 0
-	})
 }
 
 func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
@@ -320,7 +304,6 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	r.Misconfigurations = append(r.Misconfigurations, newResult.Misconfigurations...)
 	r.Secrets = append(r.Secrets, newResult.Secrets...)
 	r.Licenses = append(r.Licenses, newResult.Licenses...)
-	r.CryptoAssets = append(r.CryptoAssets, newResult.CryptoAssets...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, newResult.SystemInstalledFiles...)
 
 	if newResult.BuildInfo != nil {

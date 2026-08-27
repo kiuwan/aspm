@@ -51,7 +51,8 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 
 		repoURL, err := url.Parse(rep.URL)
 		if err != nil {
-			if ue, ok := errors.AsType[*url.Error](err); ok {
+			var ue *url.Error
+			if errors.As(err, &ue) {
 				err = ue.Unwrap()
 			}
 			logger.Debug("Unable to parse remote repository url", log.String("id", rep.ID), log.Err(err))

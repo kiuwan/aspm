@@ -108,7 +108,8 @@ func (p *Plugin) Run(ctx context.Context, opts Options) error {
 	// out if the error was from not being able to execute the plugin or
 	// an error set by the plugin itself.
 	if err = cmd.Run(); err != nil {
-		if execError, ok := errors.AsType[*exec.ExitError](err); ok {
+		var execError *exec.ExitError
+		if errors.As(err, &execError) {
 			return &types.ExitError{
 				Code: execError.ExitCode(),
 			}
